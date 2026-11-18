@@ -1,0 +1,13 @@
+{
+  "name": "herdr-gh",
+  "version": "0.1.0",
+  "description": "Herdr plugin: GitHub PRs, checks, CI runs and Dependabot alerts for the current Space.",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  }
+}

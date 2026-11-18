@@ -1,0 +1,31 @@
+id = "bpkennedy.herdr-gh"
+name = "GitHub Monitor"
+version = "0.1.0"
+min_herdr_version = "0.9.5"
+description = "GitHub for the current Space: PRs with live check status, CI runs and Dependabot GHSA alerts in a right sidebar. Approve, merge, rerun and read failed logs without leaving Herdr."
+platforms = ["linux", "macos"]
+
+# Commands go through sh so script paths resolve from the plugin root
+# regardless of the pane's working directory.
+
+# placement = "popup" is the default because popup size can only be set here;
+# the sidebar action overrides it with a right split.
+[[panes]]
+id = "dashboard"
+title = "GitHub Monitor"
+placement = "popup"
+width = "90%"
+height = "90%"
+command = ["sh", "-c", "exec node \"$HERDR_PLUGIN_ROOT/bin/dashboard.js\""]
+
+[[actions]]
+id = "sidebar"
+title = "GitHub Monitor: toggle sidebar"
+description = "Show or hide the dashboard as a sidebar to the right of the focused pane."
+command = ["sh", "-c", "exec node \"$HERDR_PLUGIN_ROOT/bin/open.js\""]
+
+[[actions]]
+id = "popup"
+title = "GitHub Monitor: open popup"
+description = "Open the dashboard as a popup over the current pane (useful in narrow windows)."
+command = ["sh", "-c", "exec node \"$HERDR_PLUGIN_ROOT/bin/open.js\" --popup"]
