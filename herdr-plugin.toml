@@ -1,6 +1,6 @@
 id = "bpkennedy.herdr-gh"
 name = "GitHub Monitor"
-version = "0.1.0"
+version = "0.1.1"
 min_herdr_version = "0.9.5"
 description = "GitHub for the current Space: PRs with live check status, CI runs and Dependabot GHSA alerts in a right sidebar. Approve, merge, rerun and read failed logs without leaving Herdr."
 platforms = ["linux", "macos"]
