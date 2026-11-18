@@ -10,7 +10,7 @@ const { displayWidth } = require('../lib/text');
 const { deferred, stripAnsi } = require('./helpers/fake');
 
 const NOW = Date.parse('2026-11-18T12:00:00Z');
-const CONFIG = { refresh_seconds: 120, merge_method: 'squash', run_limit: 20 };
+const CONFIG = { refresh_seconds: 120, merge_method: 'merge', run_limit: 20 };
 
 const pr = (number, overrides = {}) => ({
   number,
@@ -155,12 +155,12 @@ test('merge confirms first and passes method and head SHA; anything but y cancel
   const t = setup();
   await t.app.watchSpace();
   await t.app.handleInput('m');
-  assert.match(t.app.getState().confirm.prompt, /squash merge #1 PR 1/);
+  assert.match(t.app.getState().confirm.prompt, /merge #1 PR 1 \(merge\)/);
   await t.app.handleInput('n');
   assert.deepEqual(t.actionCalls(), []);
   await t.app.handleInput('m');
   await t.app.handleInput('y');
-  assert.deepEqual(t.actionCalls(), [['merge', 'acme/web', 1, 'squash', 'sha1']]);
+  assert.deepEqual(t.actionCalls(), [['merge', 'acme/web', 1, 'merge', 'sha1']]);
   assert.match(t.screen().at(-1), /Merge #1 ✓/);
 });
 

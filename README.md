@@ -2,7 +2,7 @@
 
 A [Herdr](https://herdr.dev) plugin that shows GitHub activity for the repo you're working on, in a sidebar next to your agents.
 
-Each Herdr Space maps to the GitHub repo with the same name: in a Space called `rto-insider` the plugin finds the repo named `rto-insider` owned by you or one of your orgs, and shows:
+Each Herdr Space maps to the GitHub repo with the same name: in a Space called `my-app` the plugin finds the repo named `my-app` owned by you or one of your orgs, and shows:
 
 | Tab       | Shows                                                                                 | Actions                                                                               |
 | --------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -57,7 +57,7 @@ Optional. The first launch writes defaults to `$(herdr plugin config-dir bpkenne
 ```json
 {
   "refresh_seconds": 120,
-  "merge_method": "squash",
+  "merge_method": "merge",
   "run_limit": 20
 }
 ```
@@ -65,7 +65,7 @@ Optional. The first launch writes defaults to `$(herdr plugin config-dir bpkenne
 | Key               | Default    | Meaning                                         |
 | ----------------- | ---------- | ----------------------------------------------- |
 | `refresh_seconds` | `120`      | Auto-refresh interval (minimum 30)              |
-| `merge_method`    | `"squash"` | `squash`, `merge` or `rebase` for the `m` key   |
+| `merge_method`    | `"merge"`  | `merge`, `squash` or `rebase` for the `m` key   |
 | `run_limit`       | `20`       | How many recent CI runs to show                 |
 
 ## Keys

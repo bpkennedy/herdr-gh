@@ -2,7 +2,12 @@
 
 All notable changes to this plugin. Versions follow [semver](https://semver.org); each release is tagged `vX.Y.Z`.
 
-## 0.1.0 — Unreleased
+## Unreleased
+
+- Default `merge_method` is now `merge` (was `squash`). Existing config files keep their value.
+- Merge prompt reads `merge #12 Title (merge)`.
+
+## 0.1.0 — 2026-11-18
 
 First release.
 

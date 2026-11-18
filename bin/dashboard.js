@@ -17,8 +17,8 @@ const { seg, renderLine, wrapText } = require('../lib/text');
 const { isFailedRun, prCard, runCard, alertCard } = require('../lib/cards');
 
 const MIN_NODE_MAJOR = 22;
-const DEFAULT_CONFIG = { refresh_seconds: 120, merge_method: 'squash', run_limit: 20 };
-const MERGE_METHODS = ['squash', 'merge', 'rebase'];
+const DEFAULT_CONFIG = { refresh_seconds: 120, merge_method: 'merge', run_limit: 20 };
+const MERGE_METHODS = ['merge', 'squash', 'rebase'];
 const MIN_REFRESH_SECONDS = 30;
 const MAX_RUN_LIMIT = 100;
 const SPACE_POLL_MS = 2000;
@@ -353,7 +353,7 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
     if (key === 'o') return openUrl(pr.url);
     if (key === 'a') return confirm(`approve ${ref}`, () => runAction(`Approve #${pr.number}`, () => gh.approvePr(r, pr.number, pr.headSha)));
     if (key === 'm') {
-      return confirm(`${config.merge_method} merge ${ref}`, () =>
+      return confirm(`merge ${ref} (${config.merge_method})`, () =>
         runAction(`Merge #${pr.number}`, () => gh.mergePr(r, pr.number, config.merge_method, pr.headSha)),
       );
     }
