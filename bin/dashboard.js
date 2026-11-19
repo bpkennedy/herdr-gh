@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-// Terminal dashboard for the GitHub repo named after the current Herdr Space.
+// GitHub Ops panel for the GitHub repo named after the current Herdr Space.
 // Tabs: open PRs (with their checks), recent CI runs, open Dependabot (GHSA) alerts.
 // Items are stacked cards so it reads well in a narrow sidebar and in a popup.
 // Run outside Herdr with `node bin/dashboard.js owner/repo`.

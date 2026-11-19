@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-// Opens the dashboard. Default: toggles a right-hand sidebar next to the focused
+// Opens the GitHub Ops panel. Default: toggles a right-hand sidebar next to the focused
 // pane. With --popup: opens it as a floating popup (handy in narrow windows).
 
 const { herdr } = require('../lib/herdr');
@@ -10,7 +10,7 @@ const PLUGIN_ID = process.env.HERDR_PLUGIN_ID;
 const ENTRYPOINT = 'dashboard';
 // The pane `title` in herdr-plugin.toml. Herdr exposes no plugin-ownership field
 // on panes, so the label is how the toggle recognises its own sidebar.
-const PANE_LABEL = 'GitHub Monitor';
+const PANE_LABEL = 'GitHub Ops';
 // A new split divides the focused pane 50/50; moving the divider right by this
 // fraction leaves the sidebar at roughly 35% of that pane.
 const SIDEBAR_SHRINK = 0.15;

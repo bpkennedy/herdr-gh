@@ -1,8 +1,8 @@
-# herdr-gh
+# GitHub Ops for Herdr
 
-A [Herdr](https://herdr.dev) plugin that shows GitHub activity for the repo you're working on, in a sidebar next to your agents.
+Review, merge and fix CI for the repo you're working on without leaving [Herdr](https://herdr.dev). GitHub Ops (`herdr-gh`) puts the current Space's PRs with live checks, Actions runs and Dependabot alerts in a panel beside your agents, and lets you approve, merge, rerun and read failed logs from it.
 
-![GitHub Monitor sidebar on the right of a Herdr Space, PRs tab: a Dependabot PR with a failing build-test check and a PR with passing checks](screenshots/PRs.png)
+![GitHub Ops panel as a sidebar on the right of a Herdr Space, PRs tab: a Dependabot PR with a failing build-test check and a PR with passing checks](screenshots/PRs.png)
 
 Each Herdr Space maps to the GitHub repo with the same name: in a Space called `my-app` the plugin finds the repo named `my-app` owned by you or one of your orgs, and shows:
 
@@ -14,9 +14,9 @@ Each Herdr Space maps to the GitHub repo with the same name: in a Space called `
 
 Approve, merge, rerun and comment always ask for `y` confirmation first, and the prompt names the PR or run it will act on. Approve and merge are pinned to the commit you were looking at: if someone pushes in the meantime, the merge is refused instead of merging code you haven't seen.
 
-Herdr names a Space after the folder of its first pane, so `cd` into another repo and the sidebar switches to it within a couple of seconds. If no repo matches the Space name, the sidebar says so; `cd` into a repo or rename the Space to the repo name and press `r`. When several of your repos share the name (e.g. across orgs), originals win over forks, then the most recently pushed one; the header shows how many others matched.
+Herdr names a Space after the folder of its first pane, so `cd` into another repo and the panel switches to it within a couple of seconds. If no repo matches the Space name, the panel says so; `cd` into a repo or rename the Space to the repo name and press `r`. When several of your repos share the name (e.g. across orgs), originals win over forks, then the most recently pushed one; the header shows how many others matched.
 
-![Running cd in the terminal renames the Space and the sidebar switches to the new repo](screenshots/herdr-gh.gif)
+![Running cd in the terminal renames the Space and the panel switches to the new repo](screenshots/herdr-gh.gif)
 
 ### Screenshots
 
@@ -24,7 +24,7 @@ Herdr names a Space after the folder of its first pane, so `cd` into another rep
 | -- | ----- |
 | ![CI tab: recent Actions runs with pass and fail status, branch and commit title](screenshots/CI.png) | ![Vulns tab: Dependabot alerts with severity, package, fixed version and GHSA id](screenshots/GHSA.png) |
 | **Confirm before acting** | **Popup for narrow windows** |
-| ![Merge confirmation prompt naming the PR and merge method](screenshots/Confirms.png) | ![Dashboard opened as a centred popup instead of a sidebar](screenshots/PopupAlternate.png) |
+| ![Merge confirmation prompt naming the PR and merge method](screenshots/Confirms.png) | ![GitHub Ops panel opened as a centred popup instead of a sidebar](screenshots/PopupAlternate.png) |
 
 ## Requirements
 
@@ -48,16 +48,18 @@ Then bind keys in Herdr's `config.toml` (any free keys work):
 key = "prefix+i"
 type = "plugin_action"
 command = "bpkennedy.herdr-gh.sidebar"
-description = "GitHub monitor (sidebar)"
+description = "GitHub Ops (sidebar)"
 
 [[keys.command]]
 key = "prefix+shift+i"
 type = "plugin_action"
 command = "bpkennedy.herdr-gh.popup"
-description = "GitHub monitor (popup)"
+description = "GitHub Ops (popup)"
 ```
 
-- **Sidebar** (`prefix+i`): splits the focused pane and puts the dashboard on the right at about a third of the width. Press again to close it.
+The panel opens two ways:
+
+- **Sidebar** (`prefix+i`): splits the focused pane and puts the panel on the right at about a third of the width. Press again to close it.
 - **Popup** (`prefix+shift+i`): opens it floating over everything, for narrow windows. `q` closes it.
 
 Without keybindings: `herdr plugin action invoke bpkennedy.herdr-gh.sidebar`.
@@ -82,7 +84,7 @@ Optional. The first launch writes defaults to `$(herdr plugin config-dir bpkenne
 
 ## Keys
 
-Press `?` in the dashboard for this list.
+Press `?` in the panel for this list.
 
 | Key                 | Where | Does                                                        |
 | ------------------- | ----- | ----------------------------------------------------------- |
@@ -107,7 +109,7 @@ Icons: `✓` passing, `✗` failing, `●` pending or running, `⊘` skipped or 
 ## Known limitations
 
 - **The Space name has to match the repo name.** A repo cloned into a differently named folder, or a Space you renamed by hand, won't find its repo.
-- **The sidebar is recognised by its pane label.** If you rename another pane to "GitHub Monitor", the sidebar key will close that pane instead of opening a new sidebar.
+- **The sidebar is recognised by its pane label.** If you rename another pane to "GitHub Ops", the sidebar key will close that pane instead of opening a new sidebar.
 - **The sidebar splits the focused pane**, so in a tab with several panes it sits beside the focused one rather than spanning the full height.
 - Each Space has its own sidebar; open it once per Space.
 
@@ -120,7 +122,7 @@ npm test                           # node:test, no dependencies; fakes stand in 
 node bin/dashboard.js owner/repo   # run outside Herdr against a specific repo
 ```
 
-Layout: `bin/open.js` opens/toggles the pane, `bin/dashboard.js` is the UI (`createApp` holds all state and key handling), `lib/gh.js` wraps the `gh` CLI, `lib/cards.js` and `lib/text.js` draw the cards.
+Layout: `bin/open.js` opens/toggles the pane, `bin/dashboard.js` is the panel UI (`createApp` holds all state and key handling), `lib/gh.js` wraps the `gh` CLI, `lib/cards.js` and `lib/text.js` draw the cards.
 
 ### Releasing
 

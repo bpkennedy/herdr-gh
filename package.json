@@ -1,7 +1,7 @@
 {
   "name": "herdr-gh",
-  "version": "0.1.1",
-  "description": "Herdr plugin: GitHub PRs, checks, CI runs and Dependabot alerts for the current Space.",
+  "version": "0.2.0",
+  "description": "GitHub Ops for Herdr: review, merge and fix CI for the current Space's GitHub repo.",
   "license": "MIT",
   "private": true,
   "engines": {

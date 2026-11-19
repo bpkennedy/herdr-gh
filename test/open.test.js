@@ -11,7 +11,7 @@ const PLUGIN_ID = 'bpkennedy.herdr-gh';
 
 const paneList = (panes) => ({ match: '^pane list$', stdout: { result: { panes } } });
 const editor = { pane_id: 'w1:p1', tab_id: 'w1:t1', focused: true, cwd: '/work/web' };
-const sidebar = { pane_id: 'w1:p2', tab_id: 'w1:t1', focused: false, label: 'GitHub Monitor', cwd: '/work/web' };
+const sidebar = { pane_id: 'w1:p2', tab_id: 'w1:t1', focused: false, label: 'GitHub Ops', cwd: '/work/web' };
 const ok = { match: '.', stdout: { result: { type: 'ok' } } };
 const opened = { match: '^plugin pane open .*--placement split', stdout: { result: { plugin_pane: { pane: { pane_id: 'w1:p9' } } } } };
 
