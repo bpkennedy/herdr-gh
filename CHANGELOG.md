@@ -2,6 +2,10 @@
 
 All notable changes to this plugin. Versions follow [semver](https://semver.org); each release is tagged `vX.Y.Z`.
 
+## Unreleased
+
+- Windows support. Manifest commands run `node` directly instead of through `sh`; on Windows, logs and PRs page through `more` and links open with the default browser.
+
 ## 0.2.0 — 2026-11-18
 
 - Renamed from "GitHub Monitor" to **GitHub Ops**: it reviews, merges and reruns, not only watches. Plugin id (`bpkennedy.herdr-gh`) and action ids are unchanged, so keybindings keep working. Close any sidebar opened by an older version before toggling again; it is recognised by its old title.

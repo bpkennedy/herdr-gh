@@ -28,10 +28,10 @@ Herdr names a Space after the folder of its first pane, so `cd` into another rep
 
 ## Requirements
 
-- Herdr 0.9.5+ on macOS or Linux
+- Herdr 0.9.5+ on macOS, Linux or Windows
 - Node.js 22+ (no npm dependencies)
 - [GitHub CLI](https://cli.github.com) logged in (`gh auth login`). The plugin calls `gh` for everything, so it never sees your token.
-- `less` for the log/PR viewer, and `open` (macOS) or `xdg-open` (Linux) for the browser
+- `less` for the log/PR viewer (Windows uses its built-in `more`), and `open` (macOS) or `xdg-open` (Linux) for the browser
 
 Dependabot alerts need a token that can read them. If the Vulns tab shows `HTTP 403` with a permissions message, run `gh auth refresh -s security_events`. Repos with Dependabot alerts turned off say so on the Vulns tab.
 
@@ -112,6 +112,7 @@ Icons: `✓` passing, `✗` failing, `●` pending or running, `⊘` skipped or 
 - **The sidebar is recognised by its pane label.** If you rename another pane to "GitHub Ops", the sidebar key will close that pane instead of opening a new sidebar.
 - **The sidebar splits the focused pane**, so in a tab with several panes it sits beside the focused one rather than spanning the full height.
 - Each Space has its own sidebar; open it once per Space.
+- **Windows is new.** It pages logs with `more`, without colour, and shows them only once `gh` has finished. Please open an issue if something misbehaves.
 
 ## Develop
 

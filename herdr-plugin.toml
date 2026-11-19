@@ -3,10 +3,12 @@ name = "GitHub Ops"
 version = "0.2.0"
 min_herdr_version = "0.9.5"
 description = "Review, merge and fix CI for the current Space's GitHub repo without leaving Herdr: PRs with live checks, Actions runs and Dependabot alerts in a panel beside your agents."
-platforms = ["linux", "macos"]
+platforms = ["linux", "macos", "windows"]
 
-# Commands go through sh so script paths resolve from the plugin root
-# regardless of the pane's working directory.
+# Commands are argv with no shell, so they run the same on Windows.
+# Actions run in the plugin root, so a relative script path works. The pane can
+# start in the user's folder (the sidebar passes --cwd), so it loads the script
+# from HERDR_PLUGIN_ROOT instead.
 
 # placement = "popup" is the default because popup size can only be set here;
 # the sidebar action overrides it with a right split.
@@ -16,16 +18,16 @@ title = "GitHub Ops"
 placement = "popup"
 width = "90%"
 height = "90%"
-command = ["sh", "-c", "exec node \"$HERDR_PLUGIN_ROOT/bin/dashboard.js\""]
+command = ["node", "-e", "require(require('path').join(process.env.HERDR_PLUGIN_ROOT,'bin','dashboard.js')).main()"]
 
 [[actions]]
 id = "sidebar"
 title = "GitHub Ops: toggle sidebar"
 description = "Show or hide the GitHub Ops panel as a sidebar to the right of the focused pane."
-command = ["sh", "-c", "exec node \"$HERDR_PLUGIN_ROOT/bin/open.js\""]
+command = ["node", "bin/open.js"]
 
 [[actions]]
 id = "popup"
 title = "GitHub Ops: open popup"
 description = "Open the GitHub Ops panel as a popup over the current pane (useful in narrow windows)."
-command = ["sh", "-c", "exec node \"$HERDR_PLUGIN_ROOT/bin/open.js\" --popup"]
+command = ["node", "bin/open.js", "--popup"]

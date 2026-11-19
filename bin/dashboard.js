@@ -26,6 +26,14 @@ const HEADER_LINES = 3;
 const FOOTER_LINES = 1;
 const GUTTER = 2;
 const PAGE_STEP = 5;
+const IS_WINDOWS = process.platform === 'win32';
+const PAGER_MAX_BUFFER_BYTES = 64 * 1024 * 1024; // failed-job logs can be large
+// rundll32 rather than `cmd /c start`, which would treat & in URLs as a command separator.
+const BROWSER_OPENER = {
+  darwin: ['open'],
+  linux: ['xdg-open'],
+  win32: ['rundll32', 'url.dll,FileProtocolHandler'],
+};
 
 const KEY = {
   up: ['\x1b[A', '\x1bOA', 'k'],
@@ -470,18 +478,25 @@ function main() {
     rows: () => process.stdout.rows || 24,
     write: (text) => process.stdout.write(text),
     quit: () => process.exit(0),
-    // Hands the terminal to `gh ... | less` and takes it back when the pager exits.
+    // Hands the terminal to a pager showing `gh ...` output and takes it back when the pager exits.
     page: (ghArgs) => {
       restoreTerminal();
-      spawnSync('sh', ['-c', 'gh "$@" 2>&1 | less -R', 'sh', ...ghArgs], {
-        stdio: 'inherit',
-        env: { ...process.env, GH_FORCE_TTY: String(process.stdout.columns), GH_PAGER: 'cat' },
-      });
+      if (IS_WINDOWS) {
+        // No sh or less by default on Windows: collect the output, then page it with `more`.
+        const out = spawnSync('gh', ghArgs, { encoding: 'utf8', maxBuffer: PAGER_MAX_BUFFER_BYTES });
+        const text = out.error ? `herdr-gh: ${out.error.message}\n` : `${out.stdout}${out.stderr}`;
+        spawnSync('more', [], { input: text, stdio: ['pipe', 'inherit', 'inherit'] });
+      } else {
+        spawnSync('sh', ['-c', 'gh "$@" 2>&1 | less -R', 'sh', ...ghArgs], {
+          stdio: 'inherit',
+          env: { ...process.env, GH_FORCE_TTY: String(process.stdout.columns), GH_PAGER: 'cat' },
+        });
+      }
       enterScreen();
     },
     openUrl: (url, onError) => {
-      const opener = process.platform === 'darwin' ? 'open' : 'xdg-open';
-      const child = spawn(opener, [url], { stdio: 'ignore', detached: true });
+      const [opener, ...args] = BROWSER_OPENER[process.platform] || BROWSER_OPENER.linux;
+      const child = spawn(opener, [...args, url], { stdio: 'ignore', detached: true });
       child.on('error', onError);
       child.unref();
     },
@@ -504,4 +519,5 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { createApp, loadConfig };
+// main is exported for the manifest, which starts it with `node -e` (see herdr-plugin.toml).
+module.exports = { createApp, loadConfig, main };

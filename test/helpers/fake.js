@@ -6,6 +6,9 @@ const path = require('node:path');
 
 const FAKE_CLI = path.join(__dirname, 'fake-cli.js');
 
+// The fakes are sh shims, which Windows can't execute; tests that use them skip there.
+const SKIP_FAKE_CLI = process.platform === 'win32' && 'fake gh/herdr shims need sh';
+
 // Creates an executable named `name` in a temp dir that behaves like fake-cli.js.
 // `responses`: [{ match: 'regex', stdout?, stderr?, code? }]
 function fakeCli(name, responses) {
@@ -52,4 +55,4 @@ function deferred() {
 
 const stripAnsi = (text) => text.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '');
 
-module.exports = { fakeCli, withFakeGh, deferred, stripAnsi };
+module.exports = { fakeCli, withFakeGh, deferred, stripAnsi, SKIP_FAKE_CLI };

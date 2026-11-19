@@ -1,8 +1,10 @@
 'use strict';
 
-const test = require('node:test');
+const nodeTest = require('node:test');
 const assert = require('node:assert/strict');
-const { withFakeGh } = require('./helpers/fake');
+const { withFakeGh, SKIP_FAKE_CLI } = require('./helpers/fake');
+
+const test = (name, fn) => nodeTest(name, { skip: SKIP_FAKE_CLI }, fn);
 
 const OWNERS = [
   { match: '^api user --jq', stdout: 'me\n' },

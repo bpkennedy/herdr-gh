@@ -26,8 +26,24 @@ test('the sidebar toggle looks for the pane title the manifest declares', () => 
   assert.match(read('bin/open.js'), new RegExp(`PANE_LABEL = '${paneTitle}'`));
 });
 
-test('every command the manifest runs points at a file that exists', () => {
-  const scripts = [...manifest.matchAll(/\$HERDR_PLUGIN_ROOT\/([\w/.-]+)/g)].map((m) => m[1]);
-  assert.ok(scripts.length > 0);
-  for (const script of scripts) assert.ok(fs.existsSync(path.join(root, script)), script);
+const commands = [...manifest.matchAll(/^command = (\[.*\])$/gm)].map((m) => JSON.parse(m[1]));
+
+test('every command the manifest runs points at a script that exists', () => {
+  // Matches both "bin/open.js" and the pane's join(..., 'bin','dashboard.js').
+  const scripts = commands.flatMap((argv) => [...argv.join(' ').matchAll(/bin\W{1,3}([\w-]+\.js)/g)].map((m) => m[1]));
+  assert.equal(scripts.length, commands.length);
+  for (const script of scripts) assert.ok(fs.existsSync(path.join(root, 'bin', script)), script);
+});
+
+test('commands run node directly, with no shell, so they work on Windows', () => {
+  assert.match(manifest.match(/^platforms = (.*)$/m)[1], /"windows"/);
+  for (const argv of commands) assert.equal(argv[0], 'node');
+});
+
+test('the pane command starts the panel', () => {
+  const [, flag, code] = commands[0];
+  assert.equal(flag, '-e');
+  const dashboard = path.join(root, 'bin', 'dashboard.js');
+  assert.equal(typeof require(dashboard).main, 'function');
+  assert.match(code, /\.main\(\)$/);
 });

@@ -1,10 +1,12 @@
 'use strict';
 
-const test = require('node:test');
+const nodeTest = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
-const { fakeCli } = require('./helpers/fake');
+const { fakeCli, SKIP_FAKE_CLI } = require('./helpers/fake');
+
+const test = (name, fn) => nodeTest(name, { skip: SKIP_FAKE_CLI }, fn);
 
 const OPEN_JS = path.join(__dirname, '..', 'bin', 'open.js');
 const PLUGIN_ID = 'bpkennedy.herdr-gh';
