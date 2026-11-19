@@ -2,6 +2,8 @@
 
 A [Herdr](https://herdr.dev) plugin that shows GitHub activity for the repo you're working on, in a sidebar next to your agents.
 
+![GitHub Monitor sidebar on the right of a Herdr Space, PRs tab: a Dependabot PR with a failing build-test check and a PR with passing checks](screenshots/PRs.png)
+
 Each Herdr Space maps to the GitHub repo with the same name: in a Space called `my-app` the plugin finds the repo named `my-app` owned by you or one of your orgs, and shows:
 
 | Tab       | Shows                                                                                 | Actions                                                                               |
@@ -13,6 +15,16 @@ Each Herdr Space maps to the GitHub repo with the same name: in a Space called `
 Approve, merge, rerun and comment always ask for `y` confirmation first, and the prompt names the PR or run it will act on. Approve and merge are pinned to the commit you were looking at: if someone pushes in the meantime, the merge is refused instead of merging code you haven't seen.
 
 Herdr names a Space after the folder of its first pane, so `cd` into another repo and the sidebar switches to it within a couple of seconds. If no repo matches the Space name, the sidebar says so; `cd` into a repo or rename the Space to the repo name and press `r`. When several of your repos share the name (e.g. across orgs), originals win over forks, then the most recently pushed one; the header shows how many others matched.
+
+![Running cd in the terminal renames the Space and the sidebar switches to the new repo](screenshots/herdr-gh.gif)
+
+### Screenshots
+
+| CI | Vulns |
+| -- | ----- |
+| ![CI tab: recent Actions runs with pass and fail status, branch and commit title](screenshots/CI.png) | ![Vulns tab: Dependabot alerts with severity, package, fixed version and GHSA id](screenshots/GHSA.png) |
+| **Confirm before acting** | **Popup for narrow windows** |
+| ![Merge confirmation prompt naming the PR and merge method](screenshots/Confirms.png) | ![Dashboard opened as a centred popup instead of a sidebar](screenshots/PopupAlternate.png) |
 
 ## Requirements
 
