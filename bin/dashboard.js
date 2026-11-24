@@ -26,6 +26,7 @@ const HEADER_LINES = 3;
 const FOOTER_LINES = 1;
 const GUTTER = 2;
 const PAGE_STEP = 5;
+const VULNS_TAB = 2;
 const IS_WINDOWS = process.platform === 'win32';
 const PAGER_MAX_BUFFER_BYTES = 64 * 1024 * 1024; // failed-job logs can be large
 // rundll32 rather than `cmd /c start`, which would treat & in URLs as a command separator.
@@ -126,6 +127,7 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
     ['f', 'failures only'],
     ['Vulns', ''],
     ['enter', 'open advisory'],
+    ['e', 'turn on alerts (when off)'],
   ];
 
   const emptyTabs = (value) => TABS.map(() => value);
@@ -171,6 +173,8 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
 
   const listHeight = () => Math.max(1, terminal.rows() - HEADER_LINES - FOOTER_LINES);
 
+  const canEnableAlerts = () => state.tab === VULNS_TAB && !state.notice && gh.alertsDisabled(state.errors[VULNS_TAB]);
+
   // ------------------------------------------------------------ render
 
   function headerLines(width) {
@@ -196,7 +200,10 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
     }
     if (state.notice) return wrapText(state.notice.text, width, state.notice.paint).map((l) => renderLine(l, width));
     const error = state.errors[state.tab];
-    if (error) return wrapText(error, width, red).map((l) => renderLine(l, width));
+    if (error) {
+      const offer = canEnableAlerts() ? [[], ...wrapText('Press e to turn them on (needs admin access to the repo).', width)] : [];
+      return [...wrapText(error, width, red), ...offer].map((l) => renderLine(l, width));
+    }
 
     const rows = visibleRows();
     if (rows.length === 0) return state.loading || !state.repo ? [] : [dim('Nothing to show.')];
@@ -217,9 +224,13 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
   }
 
   function footerLine(width) {
-    if (state.confirm) return renderLine([seg('[y/N] ', (t) => bold(yellow(t))), seg(state.confirm.prompt, yellow)], width);
+    if (state.confirm) {
+      const keys = state.confirm.onNo ? '[y/n/esc] ' : '[y/N] ';
+      return renderLine([seg(keys, (t) => bold(yellow(t))), seg(state.confirm.prompt, yellow)], width);
+    }
     if (state.message) return renderLine([seg(state.message.text, state.message.paint)], width);
-    const hint = state.help ? 'any key to go back' : `${TABS[state.tab].hint} · ? keys`;
+    const tabHint = canEnableAlerts() ? 'e turn on alerts' : TABS[state.tab].hint;
+    const hint = state.help ? 'any key to go back' : `${tabHint} · ? keys`;
     return renderLine([seg(hint, dim)], width);
   }
 
@@ -327,9 +338,10 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
     await refresh();
   }
 
-  function confirm(prompt, action) {
+  // `onNo` turns the prompt into a question: n answers it, any other key still cancels.
+  function confirm(prompt, action, onNo) {
     if (state.busy) return setState({ message: { text: 'Still working on the last action…', paint: yellow } });
-    return setState({ confirm: { prompt, action } });
+    return setState({ confirm: { prompt, action, onNo } });
   }
 
   // ------------------------------------------------------------ input
@@ -394,13 +406,27 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
     return undefined;
   }
 
+  // Asks which Dependabot features to turn on, then confirms the exact change before making it.
+  function promptEnableAlerts(r) {
+    const confirmEnable = (securityUpdates) =>
+      confirm(`turn on Dependabot alerts${securityUpdates ? ' + fix PRs' : ''} for ${r}`, () =>
+        runAction('Turn on Dependabot alerts', () => gh.enableDependabot(r, securityUpdates)),
+      );
+    return confirm(
+      'also open PRs that fix alerts?',
+      () => confirmEnable(true),
+      () => confirmEnable(false),
+    );
+  }
+
   const ROW_HANDLERS = [handlePrKey, handleRunKey, handleAlertKey];
 
   function handleKey(key) {
     if (state.confirm) {
-      const { action } = state.confirm;
+      const { action, onNo } = state.confirm;
       setState({ confirm: null, message: null });
       if (key === 'y' || key === 'Y') return action();
+      if (onNo && (key === 'n' || key === 'N')) return onNo();
       return undefined;
     }
     if (state.help) return setState({ help: false });
@@ -418,6 +444,8 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
     if (key === 'r') return refresh();
     if (key === 'd' && state.tab === 0) return setState({ dependabotOnly: !state.dependabotOnly });
     if (key === 'f' && state.tab === 1) return setState({ failuresOnly: !state.failuresOnly });
+
+    if (key === 'e' && canEnableAlerts()) return promptEnableAlerts(state.repo);
 
     // A notice or error replaces the list; never act on rows the user cannot see.
     if (state.notice || state.errors[state.tab]) return undefined;

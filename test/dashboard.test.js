@@ -46,6 +46,8 @@ function setup({ space = 'web', repos = { web: ['acme/web'] }, columns = 60, row
     mergePr: async (...args) => calls.push(['merge', ...args]),
     commentPr: async (...args) => calls.push(['comment', ...args]),
     rerunFailedJobs: async (...args) => calls.push(['rerun', ...args]),
+    alertsDisabled: (message) => /alerts are disabled/.test(message || ''),
+    enableDependabot: async (...args) => calls.push(['enable', ...args]),
     errorMessage: (err) => err.message,
   };
   const herdr = { label: space, error: null };
@@ -212,6 +214,51 @@ test('CI: enter shows the failed log, R reruns only unsuccessful runs', async ()
   assert.match(t.app.getState().confirm.prompt, /run 10/);
   await t.app.handleInput('y');
   assert.deepEqual(t.actionCalls().at(-1), ['rerun', 'acme/web', 10]);
+});
+
+const alertsOff = () => {
+  throw new Error('gh: Dependabot alerts are disabled for this repository. (HTTP 403)');
+};
+
+test('Vulns: disabled alerts offer to turn them on, ask about fix PRs, then confirm', async () => {
+  const t = setup();
+  t.data.alerts = alertsOff;
+  await t.app.watchSpace();
+  await t.app.handleInput('e');
+  assert.equal(t.app.getState().confirm, null, 'only offered on the Vulns tab');
+  await t.app.handleInput('3');
+  assert.match(t.screen().join(' '), /alerts are disabled.*Press e to turn them on/);
+  assert.match(t.screen().at(-1), /e turn on alerts/);
+
+  await t.app.handleInput('e');
+  assert.match(t.screen().at(-1), /\[y\/n\/esc\] also open PRs that fix alerts/);
+  await t.app.handleInput('n');
+  assert.equal(t.app.getState().confirm.prompt, 'turn on Dependabot alerts for acme/web');
+  await t.app.handleInput('x');
+  assert.deepEqual(t.actionCalls(), [], 'the final confirm cancels on anything but y');
+
+  await t.app.handleInput('e\x1b');
+  assert.equal(t.app.getState().confirm, null, 'esc cancels the question');
+  assert.deepEqual(t.actionCalls(), [], 'and does not quit');
+
+  t.data.alerts = [];
+  await t.app.handleInput('ey');
+  assert.equal(t.app.getState().confirm.prompt, 'turn on Dependabot alerts + fix PRs for acme/web');
+  await t.app.handleInput('y');
+  assert.deepEqual(t.actionCalls(), [['enable', 'acme/web', true]]);
+  assert.match(t.screen().at(-1), /Turn on Dependabot alerts ✓/);
+  assert.equal(t.app.getState().errors[2], null, 'the tab reloads once alerts are on');
+});
+
+test('Vulns: e does nothing for other errors', async () => {
+  const t = setup();
+  t.data.alerts = () => {
+    throw new Error('gh: Resource not accessible by integration (HTTP 403)');
+  };
+  await t.app.watchSpace();
+  await t.app.handleInput('3e');
+  assert.equal(t.app.getState().confirm, null);
+  assert.doesNotMatch(t.screen().join(' '), /Press e/);
 });
 
 test('a refresh requested during another refresh is queued, not dropped', async () => {

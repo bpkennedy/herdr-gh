@@ -123,6 +123,26 @@ test('comment and rerun pass the right arguments', async () => {
   ]);
 });
 
+test('enableDependabot turns on alerts, then security updates only when asked', async () => {
+  const { gh, fake } = withFakeGh([{ match: '.', stdout: '' }]);
+  await gh.enableDependabot('acme/web', false);
+  await gh.enableDependabot('acme/web', true);
+  assert.deepEqual(fake.calls(), [
+    ['api', '-X', 'PUT', 'repos/acme/web/vulnerability-alerts'],
+    ['api', '-X', 'PUT', 'repos/acme/web/vulnerability-alerts'],
+    ['api', '-X', 'PUT', 'repos/acme/web/automated-security-fixes'],
+  ]);
+});
+
+// Not `test`: this needs no fake gh, so it also runs on Windows.
+nodeTest('alertsDisabled recognises only the alerts-off error', () => {
+  const gh = require('../lib/gh');
+  assert.equal(gh.alertsDisabled('gh: Dependabot alerts are disabled for this repository. (HTTP 403)'), true);
+  assert.equal(gh.alertsDisabled('gh: Dependabot alerts are disabled for this repository. (HTTP 403)\r'), true, 'Windows line ending');
+  assert.equal(gh.alertsDisabled('gh: Resource not accessible by integration (HTTP 403)'), false);
+  assert.equal(gh.alertsDisabled(null), false);
+});
+
 test('errorMessage prefers the first line of stderr', () => {
   const { gh } = withFakeGh([]);
   assert.equal(gh.errorMessage({ stderr: 'gh: Not Found (HTTP 404)\nmore', message: 'Command failed' }), 'gh: Not Found (HTTP 404)');
