@@ -134,6 +134,16 @@ test('enableDependabot turns on alerts, then security updates only when asked', 
   ]);
 });
 
+test('enableDependabot says alerts are on when only the fix-PR step fails', async () => {
+  const { gh } = withFakeGh([
+    { match: 'automated-security-fixes$', stderr: 'gh: Validation Failed (HTTP 422)\n', code: 1 },
+    { match: '.', stdout: '' },
+  ]);
+  await assert.rejects(gh.enableDependabot('acme/web', true), {
+    message: 'alerts are on, but fix PRs could not be enabled: gh: Validation Failed (HTTP 422)',
+  });
+});
+
 // Not `test`: this needs no fake gh, so it also runs on Windows.
 nodeTest('alertsDisabled recognises only the alerts-off error', () => {
   const gh = require('../lib/gh');

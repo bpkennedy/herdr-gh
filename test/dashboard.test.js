@@ -233,7 +233,7 @@ test('Vulns: disabled alerts offer to turn them on, ask about fix PRs, then conf
   await t.app.handleInput('e');
   assert.match(t.screen().at(-1), /\[y\/n\/esc\] also open PRs that fix alerts/);
   await t.app.handleInput('n');
-  assert.equal(t.app.getState().confirm.prompt, 'turn on Dependabot alerts for acme/web');
+  assert.equal(t.app.getState().confirm.prompt, 'turn on alerts for acme/web');
   await t.app.handleInput('x');
   assert.deepEqual(t.actionCalls(), [], 'the final confirm cancels on anything but y');
 
@@ -243,7 +243,7 @@ test('Vulns: disabled alerts offer to turn them on, ask about fix PRs, then conf
 
   t.data.alerts = [];
   await t.app.handleInput('ey');
-  assert.equal(t.app.getState().confirm.prompt, 'turn on Dependabot alerts + fix PRs for acme/web');
+  assert.equal(t.app.getState().confirm.prompt, 'turn on alerts + fix PRs for acme/web');
   await t.app.handleInput('y');
   assert.deepEqual(t.actionCalls(), [['enable', 'acme/web', true]]);
   assert.match(t.screen().at(-1), /Turn on Dependabot alerts ✓/);
@@ -297,8 +297,10 @@ test('every frame fits the terminal, from a sidebar down to a tiny pane', async 
   for (const [columns, rows] of [[40, 30], [24, 8], [3, 2]]) {
     const t = setup({ columns, rows });
     t.data.prs = [pr(1, { title: '🚀 漢字 a very long title that will not fit', checkState: 'fail', checks: [{ name: 'x'.repeat(80), state: 'fail' }] })];
+    t.data.alerts = alertsOff;
     await t.app.watchSpace();
-    for (const key of ['', '2', '3', '?']) {
+    // 3 shows the alerts-off offer, e its question in the footer.
+    for (const key of ['', '2', '?', '3', 'e']) {
       await t.app.handleInput(key || '1');
       const screen = t.screen();
       assert.ok(screen.length <= rows, `${columns}x${rows}: ${screen.length} lines`);

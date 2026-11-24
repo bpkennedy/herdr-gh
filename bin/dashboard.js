@@ -409,7 +409,7 @@ function createApp({ gh, currentSpace, config, repo = null, terminal, now = Date
   // Asks which Dependabot features to turn on, then confirms the exact change before making it.
   function promptEnableAlerts(r) {
     const confirmEnable = (securityUpdates) =>
-      confirm(`turn on Dependabot alerts${securityUpdates ? ' + fix PRs' : ''} for ${r}`, () =>
+      confirm(`turn on alerts${securityUpdates ? ' + fix PRs' : ''} for ${r}`, () =>
         runAction('Turn on Dependabot alerts', () => gh.enableDependabot(r, securityUpdates)),
       );
     return confirm(

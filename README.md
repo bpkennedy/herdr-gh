@@ -33,7 +33,7 @@ Herdr names a Space after the folder of its first pane, so `cd` into another rep
 - [GitHub CLI](https://cli.github.com) logged in (`gh auth login`). The plugin calls `gh` for everything, so it never sees your token.
 - `less` for the log/PR viewer (Windows uses its built-in `more`), and `open` (macOS) or `xdg-open` (Linux) for the browser
 
-Dependabot alerts need a token that can read them. If the Vulns tab shows `HTTP 403` with a permissions message, run `gh auth refresh -s security_events`. Repos with Dependabot alerts turned off say so on the Vulns tab; press `e` there to turn them on. It asks whether Dependabot should also open PRs that fix alerts (security updates), then shows the exact change for a final `y`. This needs admin access to the repo.
+Dependabot alerts need a token that can read them. If the Vulns tab shows `HTTP 403` with a permissions message, run `gh auth refresh -s security_events`. Repos with Dependabot alerts turned off say so on the Vulns tab; press `e` there to turn them on. It asks whether Dependabot should also open PRs that fix alerts (security updates), then shows the exact change for a final `y`. This needs admin access to the repo, and GitHub turns on the repo's dependency graph along with the alerts.
 
 ## Install
 
