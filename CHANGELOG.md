@@ -2,6 +2,10 @@
 
 All notable changes to this plugin. Versions follow [semver](https://semver.org); each release is tagged `vX.Y.Z`.
 
+## 0.4.0 — 2026-11-24
+
+- **Vulns:** when Dependabot alerts are off for the repo, `e` turns them on. It asks whether Dependabot should also open PRs that fix alerts, then confirms the exact change before making it.
+
 ## 0.3.0 — 2026-11-18
 
 - Windows support. Manifest commands run `node` directly instead of through `sh`; on Windows, logs and PRs page through `more` and links open with the default browser.

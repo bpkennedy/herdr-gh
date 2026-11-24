@@ -10,7 +10,7 @@ Each Herdr Space maps to the GitHub repo with the same name: in a Space called `
 | --------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | **PRs**   | Open PRs with each failing/pending check by name, review status, author, comments     | View PR + comments, view all checks, approve, merge, `@dependabot rebase`, open in browser |
 | **CI**    | Recent GitHub Actions runs                                                            | Read the failed-job log (or run summary), rerun failed jobs, open in browser           |
-| **Vulns** | Open Dependabot alerts (GHSA id, severity, package, fixed version)                    | Open the advisory in browser                                                          |
+| **Vulns** | Open Dependabot alerts (GHSA id, severity, package, fixed version)                    | Open the advisory in browser, turn on Dependabot alerts when they are off             |
 
 Approve, merge, rerun and comment always ask for `y` confirmation first, and the prompt names the PR or run it will act on. Approve and merge are pinned to the commit you were looking at: if someone pushes in the meantime, the merge is refused instead of merging code you haven't seen.
 
@@ -33,7 +33,7 @@ Herdr names a Space after the folder of its first pane, so `cd` into another rep
 - [GitHub CLI](https://cli.github.com) logged in (`gh auth login`). The plugin calls `gh` for everything, so it never sees your token.
 - `less` for the log/PR viewer (Windows uses its built-in `more`), and `open` (macOS) or `xdg-open` (Linux) for the browser
 
-Dependabot alerts need a token that can read them. If the Vulns tab shows `HTTP 403` with a permissions message, run `gh auth refresh -s security_events`. Repos with Dependabot alerts turned off say so on the Vulns tab.
+Dependabot alerts need a token that can read them. If the Vulns tab shows `HTTP 403` with a permissions message, run `gh auth refresh -s security_events`. Repos with Dependabot alerts turned off say so on the Vulns tab; press `e` there to turn them on. It asks whether Dependabot should also open PRs that fix alerts (security updates), then shows the exact change for a final `y`. This needs admin access to the repo, and GitHub turns on the repo's dependency graph along with the alerts.
 
 ## Install
 
@@ -103,6 +103,7 @@ Press `?` in the panel for this list.
 | `R`                 | CI    | Rerun failed jobs                                           |
 | `f`                 | CI    | Toggle failures-only filter                                 |
 | `enter`             | Vulns | Open the alert in the browser                               |
+| `e`                 | Vulns | Turn on Dependabot alerts (only when they are off)          |
 
 Icons: `✓` passing, `✗` failing, `●` pending or running, `⊘` skipped or cancelled, `·` no checks, `✎3` three comments.
 
